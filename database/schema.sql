@@ -44,6 +44,15 @@ CREATE TABLE IF NOT EXISTS decisions (
     requires_teacher_confirmation INTEGER NOT NULL DEFAULT 1, reasoning_tier TEXT NOT NULL DEFAULT 'not_applicable', metadata_json TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     confirmed_at TEXT
 );
+CREATE TABLE IF NOT EXISTS orchestrator_decision_log (
+ id INTEGER PRIMARY KEY, grading_record_id INTEGER NOT NULL REFERENCES grading_records(id) ON DELETE CASCADE,
+ confidence_evaluation_id INTEGER NOT NULL REFERENCES confidence_evaluations(id) ON DELETE CASCADE,
+ route TEXT NOT NULL, raw_confidence REAL NOT NULL, evidence_coverage REAL NOT NULL,
+ floor_snapshot REAL NOT NULL, auto_approve_threshold_snapshot REAL NOT NULL,
+ safety_signals_json TEXT NOT NULL, reason_codes_json TEXT NOT NULL, explanation TEXT NOT NULL,
+ policy_version TEXT NOT NULL DEFAULT 'routing-v1', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE(grading_record_id, confidence_evaluation_id, policy_version, floor_snapshot, auto_approve_threshold_snapshot)
+);
 CREATE TABLE IF NOT EXISTS escalations (
     id INTEGER PRIMARY KEY, decision_id INTEGER REFERENCES decisions(id) ON DELETE SET NULL,
     reason TEXT NOT NULL, reasoning_tier TEXT NOT NULL DEFAULT 'not_applicable', status TEXT NOT NULL DEFAULT 'open', assigned_to TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,

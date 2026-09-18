@@ -43,6 +43,7 @@ class Settings:
     recalibration_widen_step: float
     dual_read_agreement_min: float
     name_fuzzy_match_threshold: float
+    auto_approve_min_evidence_coverage: float
     project_root: Path
     database_path: Path
     data_dir: Path
@@ -102,6 +103,7 @@ def get_settings() -> Settings:
         recalibration_widen_step=recalibration_widen_step,
         dual_read_agreement_min=dual_read_agreement_min,
         name_fuzzy_match_threshold=name_fuzzy_match_threshold,
+        auto_approve_min_evidence_coverage=_confidence_env("AUTO_APPROVE_MIN_EVIDENCE_COVERAGE", 1.0),
         project_root=PROJECT_ROOT,
         database_path=_project_path(os.getenv("GRADEASSIST_DATABASE_PATH", "database/gradeassist.db")),
         data_dir=_project_path(os.getenv("GRADEASSIST_DATA_DIR", "data")),
