@@ -103,6 +103,18 @@ CREATE TABLE IF NOT EXISTS extraction_sections (
     uncertain_fields_json TEXT NOT NULL DEFAULT '[]',
     UNIQUE(grading_record_id, section_index)
 );
+CREATE TABLE IF NOT EXISTS confidence_evaluations (
+    id INTEGER PRIMARY KEY,
+    grading_record_id INTEGER NOT NULL REFERENCES grading_records(id) ON DELETE CASCADE,
+    evidence_fingerprint TEXT NOT NULL,
+    raw_confidence REAL NOT NULL CHECK(raw_confidence BETWEEN 0 AND 1), evidence_coverage REAL NOT NULL DEFAULT 0 CHECK(evidence_coverage BETWEEN 0 AND 1),
+    dual_read_agreement REAL, total_cross_check TEXT NOT NULL,
+    roster_match_json TEXT NOT NULL, uncertainty_signals_json TEXT NOT NULL,
+    reasons_json TEXT NOT NULL, evidence_json TEXT NOT NULL,
+    evaluator_version TEXT NOT NULL DEFAULT 'canonical-v1',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(grading_record_id, evidence_fingerprint)
+);
 CREATE TABLE IF NOT EXISTS extracted_marks (
     id INTEGER PRIMARY KEY,
     grading_record_id INTEGER NOT NULL REFERENCES grading_records(id) ON DELETE CASCADE,
@@ -139,5 +151,6 @@ CREATE TABLE IF NOT EXISTS class_topic_performance_history (
 );
 CREATE INDEX IF NOT EXISTS idx_grading_records_student ON grading_records(student_id);
 CREATE INDEX IF NOT EXISTS idx_extraction_sections_record ON extraction_sections(grading_record_id);
+CREATE INDEX IF NOT EXISTS idx_confidence_evaluations_record ON confidence_evaluations(grading_record_id);
 CREATE INDEX IF NOT EXISTS idx_topic_history_student_topic ON student_topic_history(student_id, topic_id);
 CREATE INDEX IF NOT EXISTS idx_class_topic_history_topic ON class_topic_performance_history(topic_id);

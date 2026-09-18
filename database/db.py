@@ -72,6 +72,7 @@ def _apply_compatibility_migrations(connection: sqlite3.Connection) -> None:
         ("extracted_marks", "source_question_number TEXT"),
         ("extracted_marks", "evidence_json TEXT"),
         ("extracted_marks", "teacher_confirmed INTEGER NOT NULL DEFAULT 0 CHECK(teacher_confirmed IN (0, 1))"),
+        ("confidence_evaluations", "evidence_coverage REAL NOT NULL DEFAULT 0 CHECK(evidence_coverage BETWEEN 0 AND 1)"),
     ]
     for table, definition in [*required_columns.items(), *additional_columns]:
         columns = {row[1] for row in connection.execute(f"PRAGMA table_info({table})")}
